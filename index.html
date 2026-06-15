@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advertência Escolar</title>
+  <style>
+    :root {
+      --paper-width: 794px;
+      --paper-height: 1123px;
+      --text: #111111;
+      --muted: #2f2f2f;
+      --line: #222222;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      background: #e9e9e9;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+    }
+
+    .page {
+      position: relative;
+      width: var(--paper-width);
+      min-height: var(--paper-height);
+      margin: 0 auto;
+      background: #fff;
+      padding: 92px 54px 58px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.16);
+      overflow: hidden;
+    }
+
+    .content { position: relative; z-index: 1; }
+
+    header {
+      position: relative;
+      text-align: center;
+      font-weight: 700;
+      color: #111111;
+      line-height: 1.08;
+      text-transform: uppercase;
+      font-size: 12px;
+      margin-bottom: 20px;
+    }
+
+    .logo {
+      position: absolute;
+      left: -28px;
+      top: -52px;
+      width: 175px;
+      text-align: center;
+      background: transparent;
+      overflow: visible;
+    }
+
+    .logo img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: contain;
+      background: transparent;
+      border: none;
+      outline: none;
+      box-shadow: none;
+      mix-blend-mode: normal;
+      position: relative;
+      z-index: 0;
+      opacity: 0.96;
+    }
+
+    .school-info {
+      position: relative;
+      z-index: 2;
+    }
+
+    .school-info div { margin: 1px 0; }
+
+    h1 {
+      margin: 18px 0 12px;
+      text-align: center;
+      font-size: 16px;
+      color: #111111;
+      text-transform: uppercase;
+      letter-spacing: .2px;
+    }
+
+    .student-grid {
+      display: grid;
+      grid-template-columns: 1.2fr .95fr .85fr;
+      gap: 18px;
+      font-size: 12px;
+      margin: 8px 0 62px;
+    }
+
+    .student-grid div:nth-child(1) { grid-column: 1 / -1; }
+
+    .student-grid input {
+      border: none;
+      outline: none;
+      font-size: 12px;
+      padding: 2px 4px;
+      width: 140px;
+      color: #000;
+      background: transparent;
+      font-family: Arial, Helvetica, sans-serif;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .student-grid input::placeholder {
+      color: #9a9a9a;
+      font-style: italic;
+    }
+
+    #discenteInput { width: 360px; }
+
+    .autocomplete-wrap {
+      position: relative;
+      display: inline-block;
+    }
+
+    .suggestions {
+      position: absolute;
+      left: 0;
+      top: 22px;
+      width: 360px;
+      max-height: 180px;
+      overflow-y: auto;
+      background: #fff;
+      border: 1px solid #cfcfcf;
+      border-radius: 4px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, .12);
+      z-index: 50;
+      display: none;
+    }
+
+    .suggestions.show { display: block; }
+
+    .suggestion-item {
+      padding: 7px 9px;
+      cursor: pointer;
+      font-size: 12px;
+      color: #000;
+      text-align: left;
+      text-transform: uppercase;
+    }
+
+    .suggestion-item:hover,
+    .suggestion-item.active {
+      background: #eef5ff;
+    }
+
+    .label {
+      font-weight: 700;
+      margin-right: 5px;
+    }
+
+    .paragraph {
+      font-size: 12.5px;
+      line-height: 1.85;
+      color: #000;
+      text-align: justify;
+      margin-bottom: 33px;
+    }
+
+    .details {
+      font-size: 12.5px;
+      line-height: 1.8;
+      color: #000;
+      margin-bottom: 125px;
+    }
+
+    .details p { margin: 0 0 6px; }
+
+    .motivo-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .motivo-line select {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 2px 4px;
+      font-size: 12.5px;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #000;
+      background: transparent;
+    }
+
+    .obs-line {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .obs-line strong {
+      margin-top: 2px;
+      white-space: nowrap;
+    }
+
+    #observacao {
+      flex: 1;
+      border: none;
+      outline: none;
+      resize: none;
+      background: transparent;
+      font-size: 12.5px;
+      line-height: 1.8;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      min-height: 90px;
+      overflow: hidden;
+    }
+
+    .auto-fill {
+      border-bottom: none;
+      padding: 0;
+      min-width: unset;
+      display: inline;
+    }
+
+    .sign-title {
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 42px;
+    }
+
+    .signatures {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      column-gap: 50px;
+      align-items: start;
+      font-size: 10px;
+      text-align: center;
+      margin-bottom: 70px;
+    }
+
+    .signature-line {
+      border-top: 1px solid var(--line);
+      padding-top: 6px;
+      min-height: 74px;
+    }
+
+    .signature-line .name {
+      text-transform: uppercase;
+      margin-bottom: 15px;
+    }
+
+    .signature-input {
+      width: 100%;
+      border: none;
+      outline: none;
+      text-align: center;
+      padding-top: 6px;
+      background: transparent;
+      font-size: 10px;
+      font-family: Arial, Helvetica, sans-serif;
+      text-transform: uppercase;
+      color: #000;
+    }
+
+    .signature-input::placeholder {
+      color: #999;
+      text-transform: none;
+    }
+
+    .signature-line .role {
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .date {
+      width: 265px;
+      margin-left: auto;
+      margin-right: 0;
+      margin-top: 28px;
+      font-size: 10px;
+      text-align: right;
+      color: #4e5660;
+      font-weight: 700;
+    }
+
+    footer {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: 18px;
+      border-top: 1px solid #d8d8d8;
+      padding-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 8.5px;
+      color: #111111;
+    }
+
+    footer div {
+      text-align: left;
+    }
+
+    footer div:last-child {
+      text-align: right;
+    }
+
+    .print-button {
+      position: fixed;
+      right: 24px;
+      top: 24px;
+      border: none;
+      background: #2f6fed;
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 0 6px 18px rgba(0,0,0,.15);
+      transition: .2s ease;
+      z-index: 100;
+    }
+
+    .print-button:hover {
+      transform: translateY(-1px);
+      background: #1d5ddd;
+    }
+
+    @media print {
+      html,
+      body,
+      .page,
+      .page * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
+      @page {
+        size: A4;
+        margin: 0;
+      }
+
+      body {
+        padding: 0;
+        margin: 0;
+        background: #ffffff;
+        opacity: 1;
+        filter: none;
+      }
+
+      body * {
+        visibility: hidden;
+      }
+
+      .page,
+      .page * {
+        visibility: visible;
+      }
+
+      .page {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 210mm;
+        min-height: 297mm;
+        margin: 0;
+        box-shadow: none;
+        background: #ffffff;
+      }
+
+      .print-button,
+      .suggestions {
+        display: none !important;
+      }
+
+      #motivoSelect {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background: transparent;
+        border: none;
+        padding-right: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="print-button" onclick="window.print()">
+    🖨️ Imprimir
+  </button>
+  <main class="page">
+    <div class="content">
+      <header>
+        <div class="logo" aria-label="Prefeitura de Formosa">
+          <img src="logo-formosa.png" alt="Prefeitura de Formosa" />
+        </div>
+
+        <div class="school-info">
+          <div>MUNICÍPIO DE FORMOSA</div>
+          <div>SEC. MUNICIPAL DE EDUCAÇÃO</div>
+          <div>ESCOLA MUNICIPAL WALDA MIRANDA DE PAIVA</div>
+          <div style="font-weight: 500; text-transform: none;">Tel.: (61) 99850-1452 - Leis: LEI CRIAÇÃO: Nº 112 - JGP DE 17/11/1998- INEP:</div>
+          <div style="font-weight: 500;">52082750</div>
+        </div>
+      </header>
+
+      <h1>Advertência Escolar</h1>
+
+      <section class="student-grid">
+        <div>
+          <span class="label">Discente:</span>
+          <span class="autocomplete-wrap">
+            <input type="text" id="discenteInput" autocomplete="off" placeholder="Pesquise o nome do discente" />
+            <div id="sugestoesDiscentes" class="suggestions"></div>
+          </span>
+        </div>
+
+        <div>
+          <span class="label">Série:</span>
+          <input type="text" id="serieInput" placeholder="Ex: 7º ANO" />
+        </div>
+
+        <div style="display:flex; align-items:center; gap:4px; white-space:nowrap;">
+          <span class="label">Turma:</span>
+          <input type="text" id="turmaInput" placeholder="Ex: A" />
+        </div>
+
+        <div style="display:flex; align-items:center; gap:4px; white-space:nowrap;">
+          <span class="label">Turno:</span>
+          <input type="text" id="turnoInput" placeholder="Ex: Matutino" />
+        </div>
+      </section>
+
+      <section class="paragraph">
+        Fica o discente citado acima <strong>ADVERTIDO</strong> a partir desta data conforme <strong>REGIMENTO INTERNO</strong> desta Instituição Educacional, conforme Art. 283, INCISO <span id="incisoSelecionado" class="auto-fill">___</span> e este documento será adicionado à pasta do aluno.
+      </section>
+
+      <section class="details">
+        <p class="motivo-line">
+          <strong>Motivos:</strong>
+          <select id="motivoSelect">
+            <option value="">Selecione a razão da advertência</option>
+          </select>
+        </p>
+
+        <div class="obs-line">
+          <strong>Obs:</strong>
+          <textarea id="observacao" placeholder="Digite aqui a observação da advertência...">O aluno recebeu esta advertência por </textarea>
+        </div>
+      </section>
+
+      <section>
+        <div class="sign-title">Assinaturas:</div>
+
+        <div class="signatures">
+          <div class="signature-line">
+            <div class="name" id="assinaturaAluno">______________________</div>
+            <div class="role">Aluno(a)</div>
+          </div>
+
+          <div class="signature-line">
+            <input type="text" id="responsavelInput" class="signature-input" placeholder="Nome do responsável" />
+            <div class="role">Responsável(a)</div>
+          </div>
+
+          <div class="signature-line">
+            <div class="name">Professor(a)</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="date" id="dataAtual"></div>
+    </div>
+
+    <footer>
+      <div id="emitidoEm"></div>
+      <div>Página 1 de 1</div>
+    </footer>
+  </main>
+
+  <script>
+    const motivosAdvertencia = [
+      { inciso: "I", motivo: "negligenciar ou descumprir qualquer ordem escolar", obs: "O aluno deixou de cumprir orientações e normas estabelecidas pela instituição escolar, mesmo após orientação prévia da equipe pedagógica." },
+      { inciso: "II", motivo: "desrespeitar os colegas, os professores e os demais funcionários da instituição", obs: "O aluno apresentou comportamento desrespeitoso direcionado a colegas e/ou servidores da unidade escolar durante o período de aula." },
+      { inciso: "III", motivo: "retirar-se do espaço escolar sem a permissão/anuência do Coordenador Pedagógico ou do Gestor", obs: "O aluno saiu do ambiente escolar sem autorização prévia da coordenação ou da gestão da escola." },
+      { inciso: "IV", motivo: "participar das aulas/atividades escolares sem o uniforme escolar", obs: "O aluno compareceu à instituição sem o uso adequado do uniforme escolar exigido pela unidade." },
+      { inciso: "V", motivo: "simular doença para esquivar-se do cumprimento das suas obrigações", obs: "Foi identificado comportamento incompatível com a justificativa apresentada para ausência das atividades escolares." },
+      { inciso: "VI", motivo: "usar aparelhos eletrônicos portáteis no espaço escolar sem fins educacionais", obs: "O aluno utilizou aparelho eletrônico durante o horário de aula sem autorização do professor responsável." },
+      { inciso: "VII", motivo: "faltar à verdade", obs: "O aluno apresentou informações inverídicas relacionadas aos acontecimentos escolares." },
+      { inciso: "VIII", motivo: "ingressar na sala de aula, ou sair dela, sem a permissão do professor", obs: "O aluno entrou e/ou saiu da sala de aula sem autorização do professor responsável." },
+      { inciso: "IX", motivo: "promover ações que causem a desordem no contexto escolar", obs: "O aluno participou de atitudes que prejudicaram a organização e o bom andamento das atividades escolares." },
+      { inciso: "X", motivo: "portar armas, drogas, bebidas alcoólicas, artefatos explosivos ou substâncias perigosas", obs: "Foi identificado porte de material inadequado e proibido nas dependências escolares." },
+      { inciso: "XI", motivo: "usar bebida alcoólica, vender, comprar ou consumir drogas, e fumar no espaço escolar", obs: "O aluno foi identificado praticando conduta inadequada relacionada ao uso de substâncias proibidas no ambiente escolar." },
+      { inciso: "XII", motivo: "entreter-se com atividades/afazeres alheios às atividades escolares", obs: "O aluno permaneceu realizando atividades sem relação com o conteúdo e as orientações pedagógicas propostas em aula." },
+      { inciso: "XIII", motivo: "participar de brincadeiras e jogos que estimulem violência, preconceito ou bullying", obs: "O aluno participou de atitudes inadequadas envolvendo brincadeiras ofensivas e comportamento incompatível com a convivência escolar saudável." },
+      { inciso: "XIV", motivo: "extraviar ou danificar objetos pertencentes à instituição", obs: "Foi constatado dano e/ou desaparecimento de objeto pertencente à instituição escolar." },
+      { inciso: "XV", motivo: "ingressar nas dependências escolares de acesso restrito sem autorização", obs: "O aluno acessou área restrita da instituição sem autorização prévia da equipe responsável." },
+      { inciso: "XVI", motivo: "causar danos ao patrimônio escolar", obs: "O aluno provocou danos ao patrimônio da unidade escolar durante sua permanência na instituição." },
+      { inciso: "XVII", motivo: "difamar a instituição", obs: "O aluno realizou comentários e atitudes inadequadas que atingem a imagem da instituição escolar." },
+      { inciso: "XVIII", motivo: "utilizar computadores ou equipamentos da escola sem autorização", obs: "O aluno utilizou equipamentos pertencentes à escola sem autorização da equipe responsável." },
+      { inciso: "XIX", motivo: "comportar-se de maneira a perturbar o processo educativo", obs: "O comportamento apresentado pelo aluno prejudicou o desenvolvimento das atividades pedagógicas em sala de aula." },
+      { inciso: "XX", motivo: "comparecer à escola sob efeito de substâncias nocivas", obs: "O aluno apresentou comportamento incompatível com as normas escolares relacionado ao uso de substâncias inadequadas." },
+      { inciso: "XXI", motivo: "apresentar conduta ofensiva ou agressiva às pessoas", obs: "O aluno apresentou atitude ofensiva/agressiva durante a convivência escolar." },
+      { inciso: "XXII", motivo: "usar boné, touca, capuz e máscara de fantasia/personagens", obs: "O aluno permaneceu utilizando acessórios não permitidos nas dependências da instituição de ensino." },
+      { inciso: "XXIII", motivo: "namorar e/ou praticar atos sexuais no interior da instituição", obs: "O aluno apresentou comportamento inadequado ao ambiente escolar relacionado à convivência afetiva." },
+      { inciso: "XXIV", motivo: "frequentar a escola com roupas inadequadas", obs: "O aluno compareceu à instituição utilizando vestimenta inadequada ao ambiente escolar." }
+    ];
+
+    const motivoSelect = document.getElementById("motivoSelect");
+    const discenteInput = document.getElementById("discenteInput");
+    const sugestoesDiscentes = document.getElementById("sugestoesDiscentes");
+    const serieInput = document.getElementById("serieInput");
+    const turmaInput = document.getElementById("turmaInput");
+    const turnoInput = document.getElementById("turnoInput");
+    const responsavelInput = document.getElementById("responsavelInput");
+    const assinaturaAluno = document.getElementById("assinaturaAluno");
+    const incisoSelecionado = document.getElementById("incisoSelecionado");
+    const observacao = document.getElementById("observacao");
+    const dataAtual = document.getElementById("dataAtual");
+    const emitidoEm = document.getElementById("emitidoEm");
+
+    let alunosCSV = [];
+
+    function normalizarTexto(texto) {
+      return String(texto || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim()
+        .toUpperCase();
+    }
+
+    function separarCSV(linha) {
+      const campos = [];
+      let campoAtual = "";
+      let dentroDeAspas = false;
+
+      for (let i = 0; i < linha.length; i++) {
+        const caractere = linha[i];
+        const proximo = linha[i + 1];
+
+        if (caractere === '"' && proximo === '"') {
+          campoAtual += '"';
+          i++;
+        } else if (caractere === '"') {
+          dentroDeAspas = !dentroDeAspas;
+        } else if (caractere === ";" && !dentroDeAspas) {
+          campos.push(campoAtual.trim());
+          campoAtual = "";
+        } else {
+          campoAtual += caractere;
+        }
+      }
+
+      campos.push(campoAtual.trim());
+      return campos;
+    }
+
+    function textoParaLinhas(texto) {
+      return String(texto || "").split(/\r?\n/).filter(linha => linha.trim() !== "");
+    }
+
+    function mapearAlunoPorLinha(linha) {
+      const [discente, responsavel, turno, serie, turma] = separarCSV(linha);
+
+      return {
+        discente: discente || "",
+        responsavel: responsavel || "",
+        turno: turno || "",
+        serie: serie || "",
+        turma: turma || ""
+      };
+    }
+
+    function preencherDadosDoAluno(aluno) {
+      serieInput.value = aluno?.serie || "";
+      turmaInput.value = aluno?.turma || "";
+      turnoInput.value = aluno?.turno || "";
+      responsavelInput.value = aluno?.responsavel || "";
+      assinaturaAluno.textContent = aluno?.discente || "______________________";
+    }
+
+    function obterSugestoes(nomeDigitado) {
+      const busca = normalizarTexto(nomeDigitado);
+      if (!busca) return [];
+
+      return alunosCSV
+        .map(aluno => {
+          const nomeNormalizado = normalizarTexto(aluno.discente);
+          const partesDoNome = nomeNormalizado.split(" ").filter(Boolean);
+
+          let prioridade = 999;
+
+          if (nomeNormalizado.startsWith(busca)) {
+            prioridade = 1;
+          } else if (partesDoNome.some(parte => parte.startsWith(busca))) {
+            prioridade = 2;
+          } else if (nomeNormalizado.includes(busca)) {
+            prioridade = 3;
+          }
+
+          return { aluno, prioridade };
+        })
+        .filter(item => item.prioridade !== 999)
+        .sort((a, b) => {
+          if (a.prioridade !== b.prioridade) return a.prioridade - b.prioridade;
+          return a.aluno.discente.localeCompare(b.aluno.discente, "pt-BR");
+        })
+        .map(item => item.aluno)
+        .slice(0, 8);
+    }
+
+    let sugestaoAtiva = -1;
+
+    function fecharSugestoes() {
+      sugestoesDiscentes.classList.remove("show");
+      sugestoesDiscentes.innerHTML = "";
+      sugestaoAtiva = -1;
+    }
+
+    function selecionarAluno(aluno) {
+      if (!aluno) return;
+      discenteInput.value = aluno.discente;
+      preencherDadosDoAluno(aluno);
+      fecharSugestoes();
+    }
+
+    function mostrarSugestoes(nomeDigitado) {
+      const sugestoes = obterSugestoes(nomeDigitado);
+      sugestoesDiscentes.innerHTML = "";
+      sugestaoAtiva = -1;
+
+      if (!sugestoes.length) {
+        fecharSugestoes();
+        return;
+      }
+
+      sugestoes.forEach((aluno, index) => {
+        const item = document.createElement("div");
+        item.className = "suggestion-item";
+        item.textContent = aluno.discente;
+        item.addEventListener("mousedown", (event) => {
+          event.preventDefault();
+          selecionarAluno(aluno);
+        });
+        sugestoesDiscentes.appendChild(item);
+      });
+
+      sugestoesDiscentes.classList.add("show");
+    }
+
+    function atualizarSugestaoAtiva() {
+      const itens = sugestoesDiscentes.querySelectorAll(".suggestion-item");
+      itens.forEach((item, index) => {
+        item.classList.toggle("active", index === sugestaoAtiva);
+      });
+    }
+
+    async function carregarCSVAutomatico() {
+      try {
+        const resposta = await fetch("advertencia.csv");
+        if (!resposta.ok) throw new Error("Arquivo advertencia.csv não encontrado na mesma pasta do index.html.");
+
+        const buffer = await resposta.arrayBuffer();
+        const texto = new TextDecoder("iso-8859-1").decode(buffer);
+        const linhas = textoParaLinhas(texto);
+
+        alunosCSV = linhas
+          .slice(1)
+          .map(mapearAlunoPorLinha)
+          .filter(aluno => aluno.discente);
+
+        // CSV carregado. As sugestões aparecem quando você começa a digitar.
+      } catch (erro) {
+        console.error(erro);
+      }
+    }
+
+    function procurarAluno(nomeDigitado) {
+      const busca = normalizarTexto(nomeDigitado);
+      if (!busca) return null;
+
+      return alunosCSV.find(aluno => normalizarTexto(aluno.discente) === busca) ||
+             alunosCSV.find(aluno => normalizarTexto(aluno.discente).includes(busca));
+    }
+
+    discenteInput.addEventListener("input", () => {
+      const textoDigitado = discenteInput.value.trim();
+      const alunoExato = alunosCSV.find(aluno => normalizarTexto(aluno.discente) === normalizarTexto(textoDigitado));
+
+      if (alunoExato) {
+        preencherDadosDoAluno(alunoExato);
+      } else {
+        preencherDadosDoAluno({ discente: textoDigitado });
+      }
+
+      mostrarSugestoes(textoDigitado);
+    });
+
+    discenteInput.addEventListener("keydown", (event) => {
+      const itens = sugestoesDiscentes.querySelectorAll(".suggestion-item");
+      if (!itens.length) return;
+
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        sugestaoAtiva = (sugestaoAtiva + 1) % itens.length;
+        atualizarSugestaoAtiva();
+      }
+
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        sugestaoAtiva = (sugestaoAtiva - 1 + itens.length) % itens.length;
+        atualizarSugestaoAtiva();
+      }
+
+      if (event.key === "Enter") {
+        event.preventDefault();
+        const index = sugestaoAtiva >= 0 ? sugestaoAtiva : 0;
+        const nomeSelecionado = itens[index].textContent;
+        const aluno = alunosCSV.find(item => item.discente === nomeSelecionado);
+        selecionarAluno(aluno);
+      }
+
+      if (event.key === "Escape") {
+        fecharSugestoes();
+      }
+    });
+
+    discenteInput.addEventListener("blur", () => {
+      setTimeout(fecharSugestoes, 120);
+    });
+
+    function atualizarDatas() {
+      const agora = new Date();
+
+      const dataCompleta = agora.toLocaleDateString("pt-BR", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      });
+
+      const dataHora = agora.toLocaleString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+
+      dataAtual.textContent = dataCompleta;
+      emitidoEm.textContent = `Emitido em ${dataHora}`;
+    }
+
+    motivosAdvertencia.forEach((item, index) => {
+      const option = document.createElement("option");
+      option.value = index;
+      option.textContent = item.motivo;
+      motivoSelect.appendChild(option);
+    });
+
+    motivoSelect.addEventListener("change", () => {
+      if (motivoSelect.value === "") {
+        incisoSelecionado.textContent = "___";
+        return;
+      }
+
+      const item = motivosAdvertencia[motivoSelect.value];
+      incisoSelecionado.textContent = item.inciso;
+      observacao.value = item.obs;
+    });
+
+    function executarTestesBasicos() {
+      const linhasTeste = textoParaLinhas("DISCENTE;RESPONSAVEL;TURNO;SERIE;TURMA\nALUNO TESTE;RESP TESTE;Matutino;7º ANO;B");
+      console.assert(linhasTeste.length === 2, "Teste: textoParaLinhas deve separar cabeçalho e aluno.");
+
+      const alunoTeste = mapearAlunoPorLinha("ALUNO TESTE;RESP TESTE;Matutino;7º ANO;B");
+      console.assert(alunoTeste.discente === "ALUNO TESTE", "Teste: discente deve ser lido do CSV.");
+      console.assert(alunoTeste.responsavel === "RESP TESTE", "Teste: responsável deve ser lido do CSV.");
+      console.assert(alunoTeste.turno === "Matutino", "Teste: turno deve ser lido do CSV.");
+      console.assert(alunoTeste.serie === "7º ANO", "Teste: série deve ser lida do CSV.");
+      console.assert(alunoTeste.turma === "B", "Teste: turma deve ser lida do CSV.");
+
+      const camposComAspas = separarCSV('ALUNO;"RESP; COM PONTO E VÍRGULA";Vespertino;8º ANO;C');
+      console.assert(camposComAspas[1] === "RESP; COM PONTO E VÍRGULA", "Teste: CSV com aspas deve preservar ponto e vírgula interno.");
+
+      const alunosOriginais = alunosCSV;
+      alunosCSV = [
+        { discente: "MARIA FERNANDA" },
+        { discente: "FELIPE ALMEIDA" },
+        { discente: "ANA FLÁVIA" },
+        { discente: "JOÃO SOFIA" }
+      ];
+
+      const sugestoesF = obterSugestoes("F").map(aluno => aluno.discente);
+      console.assert(sugestoesF[0] === "FELIPE ALMEIDA", "Teste: nomes que começam com a letra buscada devem aparecer primeiro.");
+      console.assert(sugestoesF.includes("MARIA FERNANDA"), "Teste: nomes com segunda parte começando com a busca também devem aparecer.");
+
+      alunosCSV = alunosOriginais;
+    }
+
+    executarTestesBasicos();
+    carregarCSVAutomatico();
+    atualizarDatas();
+  </script>
+</body>
+</html>
